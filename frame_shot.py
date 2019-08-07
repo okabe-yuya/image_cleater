@@ -3,7 +3,7 @@ import os
 from settings import VIDEO_DIR, SAVE_IMAGES_DIR, FPS_ITERATION
 
 
-def save_frame_range_seconds(in_video_dir, save_path, time_obj, ext="mp4"):
+def save_frame_range_seconds(in_video_dir, save_path, time_obj=None, ext="mp4"):
   """
     指定ディレクトリ内の指定拡張子のビデオのキャプチャ画像を生成する(全ファイルが対象, default=mp4)
     >>> in_video_dir = "video"
@@ -45,9 +45,17 @@ def save_frame_range_seconds(in_video_dir, save_path, time_obj, ext="mp4"):
       else:
         return
 
+  if time_obj[-4:] == ".csv":
+    time_obj = create_time_obj(time_obj)
+
   ref_video_path = [os.path.join(in_video_dir, video) for video in os.listdir(in_video_dir)]
   ref_video_path = list(filter(lambda x: x[-4:] == f".{ext}", ref_video_path))
   [_save_frame_range_seconds(path, save_path, time_obj[i].get("start"), time_obj[i].get("end")) for i, path in enumerate(ref_video_path)]
+
+
+def create_time_obj(csv_path, start_sec="start_sec", end_sec="end_sec"):
+  df = pd.read_csv(csv_path)
+  return [{"start": s, "end": e} for s, e in zip(df[start_sec], df[end_sec])]
 
 
 if __name__ == "__main__":
@@ -57,4 +65,5 @@ if __name__ == "__main__":
     {"start": 0, "end": 77},
     {"start": 30, "end": 90}
   ]
+  time_obj = "download_list.csv"
   save_frame_range_seconds("video", SAVE_IMAGES_DIR, time_obj)
