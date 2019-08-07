@@ -1,0 +1,7 @@
+video/
+__pycache__/
+.DS_Store
+shot/
+*.zip
+.vscode/
+dataset/
